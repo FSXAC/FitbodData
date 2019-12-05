@@ -1,6 +1,7 @@
 
 // Global object to keep track of all the data
-let g_FitData = undefined;
+let g_FitDataLines = undefined;		// Data sorted as list of objects
+let g_FitHistoryData = undefined;	// Data sorted as list of days of objects
 
 // Load csv
 // FIXME: HACK: currently hardcoded path
@@ -10,15 +11,24 @@ $(document).ready(function() {
 		type: 'GET',
 		url: 'data/fitbod_workout.csv',
 		dataType: 'text',
-		success: function(data) {
-			processWorkoutCSV(data);
-			populateExercisesToSidebar();
-		}
+		success: main
 	});
 
 	// Setup event handling for the top navigation buttons
 	setupNavEventHandling();
 });
+
+function main(data) {
+
+	// Preprocess csv into usable data
+	processWorkoutCSV(data);
+
+	// Process data into (by day) and (by exercise)
+	processHistory();
+
+	// Populate exercise page
+	populateExercisesToSidebar();
+}
 
 function setupNavEventHandling() {
 	$('#nav-overview-button').on('click', handleNavOverview);
@@ -59,10 +69,10 @@ function stripQuotes(str) {
 }
 
 // This function takes in file of csv data
-// and then populates the global variable g_FitData
+// and then populates the global variable g_FitDataLines
 // which is simply JSON form of the original data with no organization
 function processWorkoutCSV(csvData) {
-	// Process the CSV file and put it in the global g_FitData variable
+	// Process the CSV file and put it in the global g_FitDataLines variable
 	// The header for each CSV file is:
 	// Date, exercise, Sets, Reps, Weight (kg), Is warm up, Notes
 
@@ -91,15 +101,67 @@ function processWorkoutCSV(csvData) {
 		});
 	}
 
-	g_FitData = dataLines;
+	g_FitDataLines = dataLines;
+}
+
+function processHistory() {
+	// Assuming g_FitDataLines is valid
+	if (g_FitDataLines === undefined)
+		console.error("FitDataLines still undefined");
+
+	// Use date to determine when exercise happened
+	history = {};
+
+	// First pass: separate them into dates
+	for (let i = 0; i < g_FitDataLines.length; i++) {
+		let thisdate = g_FitDataLines[i].date;
+
+		if (!(thisdate in history)) {
+			history[thisdate] = [];
+		}
+		
+		history[thisdate].push(g_FitDataLines[i]);
+	}
+
+	// Second pass: calculate aux stuff
+	g_FitHistoryData = {
+		'data': []
+	}
+	for (let workoutDate in history) {
+
+		// get workout exercises as an array
+		let workoutExercises = history[workoutDate];
+
+		// calculate some things
+		let exs = [];
+		let volume = 0;
+
+		for (let ex in workoutExercises) {
+			// Add to list of exercises performed
+			if (!exs.includes(ex.exercise)) {
+				exs.push(ex.exercise);
+			}
+
+			// Add volume if not warmup
+			if (!ex.isWarmUp)
+				volume += ex.reps * ex.weightKg;
+		}
+
+		// Push data into the global data container
+		g_FitHistoryData.data.push({
+			'date': workoutDate,
+			'exercises': exs,
+			'volume': volume
+		});
+	}
 }
 
 function populateExercisesToSidebar() {
 	// Make a list of exercises and populate sidebar
 	let exercises = [];
 	
-	for (let i = 0; i < g_FitData.length; i++) {
-		const dataEntry = g_FitData[i];
+	for (let i = 0; i < g_FitDataLines.length; i++) {
+		const dataEntry = g_FitDataLines[i];
 		if (!exercises.includes(dataEntry['exercise'])) {
 			exercises.push(dataEntry['exercise'])
 		}
@@ -123,8 +185,8 @@ function populateExercisesToSidebar() {
 function populateExerciseSummary(exerciseName) {
 	let entries = [];
 
-	for (let i = 0; i < g_FitData.length; i++) {
-		const dataEntry = g_FitData[i];
+	for (let i = 0; i < g_FitDataLines.length; i++) {
+		const dataEntry = g_FitDataLines[i];
 		if (dataEntry['exercise'] === exerciseName) {
 			entries.push(dataEntry)
 		}
