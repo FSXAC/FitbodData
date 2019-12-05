@@ -25,6 +25,7 @@ function main(data) {
 
 	// Process data into (by day) and (by exercise)
 	processHistory();
+	populateHistory();
 
 	// Populate exercise page
 	populateExercisesToSidebar();
@@ -110,7 +111,7 @@ function processHistory() {
 		console.error("FitDataLines still undefined");
 
 	// Use date to determine when exercise happened
-	history = {};
+	let history = {};
 
 	// First pass: separate them into dates
 	for (let i = 0; i < g_FitDataLines.length; i++) {
@@ -127,6 +128,8 @@ function processHistory() {
 	g_FitHistoryData = {
 		'data': []
 	}
+
+	// Iterate history (dict) with workoutDate as key
 	for (let workoutDate in history) {
 
 		// get workout exercises as an array
@@ -136,7 +139,15 @@ function processHistory() {
 		let exs = [];
 		let volume = 0;
 
-		for (let ex in workoutExercises) {
+		if (workoutExercises.length === undefined) {
+			console.log(history);
+			console.log(workoutExercises);
+			console.log(workoutDate);
+		}
+
+		for (let i = 0; i < workoutExercises.length; i++) {
+			let ex = workoutExercises[i];
+
 			// Add to list of exercises performed
 			if (!exs.includes(ex.exercise)) {
 				exs.push(ex.exercise);
@@ -148,11 +159,27 @@ function processHistory() {
 		}
 
 		// Push data into the global data container
-		g_FitHistoryData.data.push({
+		let workoutData = {
 			'date': workoutDate,
 			'exercises': exs,
 			'volume': volume
-		});
+		};
+		g_FitHistoryData.data.push(workoutData);
+	}
+}
+
+function populateHistory() {	
+	for (let i = 0; i < g_FitHistoryData.data.length; i++) {
+		let workout = g_FitHistoryData.data[i];
+		let itemHtml = '<h3>{date}</h3><p>{n} exercies: {exs}</p><p>Volume: {v}</p>'
+		$('#history-list').append(
+			itemHtml
+			.replace('{date}', workout.date)
+			.replace('{n}', workout.exercises.length)
+			.replace('{exs}', workout.exercises.join(', '))
+			.replace('{v}', workout.volume)
+		);
+		$('#history-list').append('<hr/>')
 	}
 }
 
