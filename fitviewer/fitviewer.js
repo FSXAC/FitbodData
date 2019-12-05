@@ -69,6 +69,10 @@ function stripQuotes(str) {
 	}
 }
 
+function kgToPound(kg) {
+	return kg * 2.204;
+}
+
 // This function takes in file of csv data
 // and then populates the global variable g_FitDataLines
 // which is simply JSON form of the original data with no organization
@@ -171,13 +175,13 @@ function processHistory() {
 function populateHistory() {	
 	for (let i = 0; i < g_FitHistoryData.data.length; i++) {
 		let workout = g_FitHistoryData.data[i];
-		let itemHtml = '<h3>{date}</h3><p>{n} exercies: {exs}</p><p>Volume: {v}</p>'
+		let itemHtml = '<p class="lead">{date}</p><p>{n} exercies: {exs}</p><p>Volume: {v} lb</p>'
 		$('#history-list').append(
 			itemHtml
 			.replace('{date}', workout.date)
 			.replace('{n}', workout.exercises.length)
 			.replace('{exs}', workout.exercises.join(', '))
-			.replace('{v}', workout.volume)
+			.replace('{v}', Math.round(kgToPound(workout.volume)))
 		);
 		$('#history-list').append('<hr/>')
 	}
