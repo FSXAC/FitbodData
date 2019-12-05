@@ -15,7 +15,39 @@ $(document).ready(function() {
 			populateExercisesToSidebar();
 		}
 	});
+
+	// Setup event handling for the top navigation buttons
+	setupNavEventHandling();
 });
+
+function setupNavEventHandling() {
+	$('#nav-overview-button').on('click', handleNavOverview);
+	$('#nav-history-button').on('click', handleNavHistory);
+	$('#nav-exercises-button').on('click', handleNavExercises);
+}
+
+function handleNavClear() {
+	$('.nav-item').removeClass('active');
+	$('.content-page').hide();
+}
+
+function handleNavOverview() {
+	handleNavClear()
+	$('#nav-overview-button').parent().addClass('active');
+	$('.overview-content').show();
+}
+
+function handleNavHistory() {
+	handleNavClear()
+	$('#nav-history-button').parent().addClass('active');
+	$('.history-content').show();
+}
+
+function handleNavExercises() {
+	handleNavClear()
+	$('#nav-exercises-button').parent().addClass('active');
+	$('.exercises-content').show();
+}
 
 function stripQuotes(str) {
 	// Helper function to strip the quotation marks
@@ -26,14 +58,18 @@ function stripQuotes(str) {
 	}
 }
 
+// This function takes in file of csv data
+// and then populates the global variable g_FitData
+// which is simply JSON form of the original data with no organization
 function processWorkoutCSV(csvData) {
 	// Process the CSV file and put it in the global g_FitData variable
 	// The header for each CSV file is:
 	// Date, exercise, Sets, Reps, Weight (kg), Is warm up, Notes
 
+	// Split CSV into individual lines
 	const ALL_DATA_LINES = csvData.split(/\n/);
 
-	let DataLines = []
+	let dataLines = []
 	for (let i = 1; i < ALL_DATA_LINES.length; i++) {
 		let data = ALL_DATA_LINES[i].split(',');
 
@@ -45,7 +81,7 @@ function processWorkoutCSV(csvData) {
 		isWarmUp = data[5] === 'true';
 		notes = data[6];
 
-		DataLines.push({
+		dataLines.push({
 			'date': date,
 			'exercise': exercise,
 			'reps': reps,
@@ -55,7 +91,7 @@ function processWorkoutCSV(csvData) {
 		});
 	}
 
-	g_FitData = DataLines;
+	g_FitData = dataLines;
 }
 
 function populateExercisesToSidebar() {
@@ -76,12 +112,6 @@ function populateExercisesToSidebar() {
 		const listItemId = '#li-' + exerciseName.replace(/[ ]/g, '-');
 
 		$('#exercise-list').append('<li class="nav-item"><a href="#" id="' + listItemId + '">' + exercises[i] + '</a></li>')
-
-		// // Assign event listeners
-		// $(listItemId).on('click', function() {
-		// 	alert($(this).text());
-		// 	populateExerciseSummary(exerciseName);
-		// });
 	}
 
 	// Assign event listeners

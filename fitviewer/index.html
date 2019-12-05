@@ -14,16 +14,29 @@
 	<script src="fitviewer.js"></script>
 
 	<style>
+		.navbar { border: 1px solid black; }
+		.exercise-side-bar { border: 1px solid navy; }
 	</style>
 </head>
 <body>
-<nav class="navbar sticky-top navbar-expand-md navbar-light bg-light" style="border-bottom: 3px solid black">
+<nav class="navbar navbar-expand-md navbar-light bg-light">
 	<div class="container-fluid">
 		<a href="/" class="navbar-brand">FitViewer</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
 			aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item active">
+			  <a class="nav-link" href="#" id="nav-overview-button">Overview</a>
+			</li>
+			<li class="nav-item">
+			  <a class="nav-link" href="#" id="nav-history-button">History</a>
+			</li>
+			<li class="nav-item">
+			  <a class="nav-link" href="#" id="nav-exercises-button">Exercises</a>
+			</li>
+		  </ul>
 		<form class="form-inline">
 			<input class="form-control mr-2" type="file" id="fileInput" value="Import" disabled />
 			<a class="btn btn-outline-primary" id="loadButton" href="#" disabled>Load</a>
@@ -32,9 +45,21 @@
 </nav>
 
 <div class="container-fluid">
-	<div class="row">
-		<div class="col-2 py-2" style="background: #ccc">
-			<h3>Exercises</h3>
+	<div class="content-page overview-content row">
+		<div class="col-12">
+			<h1>Overview</h1>
+		</div>
+	</div>
+	<div class="content-page history-content row" style="display: none">
+		<div class="col-12">
+			<h1>History</h1>
+		</div>
+	</div>
+	<div class="content-page exercises-content row" style="display: none">
+		<div class="col-12">
+			<h1>Exercises</h1>
+		</div>
+		<div class="exercise-side-bar col-2 py-2">
 			<ul id="exercise-list" class="nav flex-column"></ul>
 		</div>
 		<div class="col-10 py-2">
