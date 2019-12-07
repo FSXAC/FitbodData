@@ -10,3 +10,7 @@ function stripQuotes(str) {
 function kgToPound(kg) {
 	return kg * 2.204;
 }
+
+function get1rm(weight, reps) {
+	return weight * (1 + reps / 30.0);
+}

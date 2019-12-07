@@ -14,6 +14,10 @@ let g_FitExercises = {
 	data: {}
 };
 
+let g_chart1RM = document.getElementById('chart-1rm').getContext('2d');
+let g_chart1RMConfig;
+let g_chart1RMChart;
+
 $(document).ready(function() {
 	// Setup event handling for the top navigation buttons (ui.js)
 	setupNavEventHandling();
@@ -29,8 +33,11 @@ $(document).ready(function() {
 				processFitData(results.data)
 			}
 		},
-		complete: function(results) {
+		complete: function() {
 			console.log('File processing complete.');
+
+			// postProcessFitData();
+
 			// handleNavOverview();
 			handleNavExercises();
 			populateView();
@@ -129,6 +136,22 @@ function processFitData(data) {
 	}
 }
 
+// This function adds some statistics to the data
+// function postProcessFitData() {
+// 	for (let [key, value] of Object.entries(g_FitExercises.data)) {
+// 		for (let [key_p, value_p] of Object.entries(value)) {
+
+			
+			
+
+// 			// Apply the 1rm value to the set object
+// 			// g_FitExercises.data[key][key_p]['1rm'] = max_1rm
+// 		}
+// 	}
+
+// 	console.log(g_FitExercises.data);
+// }
+
 // Populate webpage with data
 function populateView() {
 	populateFitHistoryView();
@@ -188,6 +211,14 @@ function populateExerciseView() {
 }
 
 function populateExerciseSummary(exercise) {
+
+	// Clear chart
+	g_chart1RMConfig.data.labels = [];
+	g_chart1RMConfig.data.datasets.forEach(function(dataset) {
+		dataset.data = [];
+	});
+	g_chart1RMChart.update();
+
 	$('#exercise-summary-heading').html(exercise)
 	const exerciseData = g_FitExercises.data[exercise];
 
@@ -197,19 +228,25 @@ function populateExerciseSummary(exercise) {
 	let innerHtml = ''
 
 	for (let keyIndex = sorted_keys.length - 1; keyIndex >= 0; keyIndex--) {
+
 		let key = sorted_keys[keyIndex];
+		let date = new Date(key.substring(0, 19)).toDateString();
 
 		innerHtml += '<p class="mb-1">';
-		innerHtml += new Date(key.substring(0, 19)).toDateString();
+		innerHtml += date;
 		innerHtml += '</p>';
 
 		innerHtml += '<div class="pl-2 mb-3">';
+
+		// Iterate through each set
 		for (let i = 0; i < exerciseData[key].length; i++) {
 
-			let reps = exerciseData[key][i].reps;
-			let weightLb = Math.round(kgToPound(exerciseData[key][i].weight));
+			let set = exerciseData[key][i];
+
+			let reps = set.reps;
+			let weightLb = Math.round(kgToPound(set.weight));
 			
-			if (exerciseData[key][i].isWarmup) {
+			if (set.isWarmup) {
 				innerHtml += '<p class="text-gray">';
 			} else {
 				innerHtml += '<p>';
@@ -229,16 +266,33 @@ function populateExerciseSummary(exercise) {
 			innerHtml += '</p>';
 		}
 		innerHtml += '</div>';
+
+		// Find the maximum 1rm of that session
+		let max_1rm = 0;
+		for (let i = 0; i < exerciseData[key].length; i++) {
+			let set = exerciseData[key][i];
+
+			if (set.isWarmup) {
+				continue;
+			}
+
+			let set1rm = get1rm(set.weight, set.reps);
+			if (set1rm > max_1rm) {
+				max_1rm = set1rm;
+			}
+		}
+
+		g_chart1RMConfig.data.labels.unshift(date);
+		g_chart1RMConfig.data.datasets.forEach(function(dataset) {
+			dataset.data.unshift(Math.round(kgToPound(max_1rm), 1));
+		});
 	}
 
 	$('#exercise-summary-data').html(innerHtml);
 
-	console.log(exerciseData);
+	// Update chart
+	g_chart1RMChart.update();
 }
-
-let g_chart1RM = document.getElementById('chart-1rm').getContext('2d');
-let g_chart1RMConfig;
-let g_chart1RMChart;
 
 function setupCharts() {
 	Chart.defaults.global.defaultFontColor = 'white';
@@ -271,7 +325,13 @@ function setupCharts() {
 					scaleLabel: {
 						display: true,
 						labelString: 'Date'
-					}
+					},
+					// ticks: {
+					// 	callback: function(dataLabel, index) {
+					// 		// Hide the label of every 2nd dataset. return null to hide the grid line too
+					// 		return index % 3 === 0 ? dataLabel : '';
+					// 	}
+					// }
 				},
 				y: {
 					display: true,
