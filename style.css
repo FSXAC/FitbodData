@@ -87,3 +87,17 @@ p.htitle {
 
 #exercise-list li.nav-item { padding: 0 .5em; }
 #exercise-list li.nav-item:nth-child(2n) { background-color: #aaa1; }
+
+#exercise-list-search {
+    color: #fff;
+    background-color: transparent;
+    border: 1px solid #fff4;
+    padding: .25em .5em;
+    width: 100%;
+}
+
+#fileInput {
+    background-color: transparent;
+    color: #fff;
+    border: 1px solid #fff7;
+}
