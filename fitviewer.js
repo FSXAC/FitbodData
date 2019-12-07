@@ -17,6 +17,15 @@ let g_FitExercises = {
 let g_chart1RM = document.getElementById('chart-1rm').getContext('2d');
 let g_chart1RMConfig;
 let g_chart1RMChart;
+let g_chartRW = document.getElementById('chart-rw').getContext('2d');
+let g_chartRWConfig;
+let g_chartRWChart;
+let g_chartRR = document.getElementById('chart-rr').getContext('2d');
+let g_chartRRConfig;
+let g_chartRRChart;
+let g_chartV = document.getElementById('chart-v').getContext('2d');
+let g_chartVConfig;
+let g_chartVChart;
 
 $(document).ready(function() {
 	// Setup event handling for the top navigation buttons (ui.js)
@@ -192,21 +201,13 @@ function populateExerciseView() {
 
 function populateExerciseSummary(exercise) {
 
-	// Clear chart
-	g_chart1RMConfig.data.labels = [];
-	g_chart1RMConfig.data.datasets.forEach(function(dataset) {
-		dataset.data = [];
-	});
-	g_chart1RMChart.update();
-
 	$('#exercise-summary-heading').html(exercise)
 	const exerciseData = g_FitExercises.data[exercise];
 
 	const sorted_keys = Object.keys(exerciseData).sort();
-
-
 	let innerHtml = ''
 
+	// Populate exercise history
 	for (let keyIndex = sorted_keys.length - 1; keyIndex >= 0; keyIndex--) {
 
 		let key = sorted_keys[keyIndex];
@@ -246,32 +247,76 @@ function populateExerciseSummary(exercise) {
 			innerHtml += '</p>';
 		}
 		innerHtml += '</div>';
+	}
+
+	$('#exercise-summary-data').html(innerHtml);
+
+	// Populate charts
+	// Clear chart
+	clearCharts();
+
+	let recordWeight = 0;
+	let recordRepetition = 0;
+
+
+	for (let keyIndex = 0; keyIndex < sorted_keys.length; keyIndex++) {
+
+		let key = sorted_keys[keyIndex];
+		let date = new Date(key.substring(0, 19)).toDateString();
 
 		// Find the maximum 1rm of that session
-		let max_1rm = 0;
+		let workoutMax1RM = 0;
+		let workoutMaxWeight = 0;
+		let workoutMaxRep = 0;
+		let workoutVolume = 0;
+
 		for (let i = 0; i < exerciseData[key].length; i++) {
 			let set = exerciseData[key][i];
 
 			if (set.isWarmup) {
 				continue;
 			}
-
+			
+			// Get max 1rm
 			let set1rm = get1rm(set.weight, set.reps);
-			if (set1rm > max_1rm) {
-				max_1rm = set1rm;
+			if (set1rm > workoutMax1RM) {
+				workoutMax1RM = set1rm;
+			}
+
+			// Get max weight and reps
+			if (workoutMaxWeight < set.weight) {
+				workoutMaxWeight = set.weight;
+			}
+			if (workoutMaxRep < set.reps) {
+				workoutMaxRep = set.reps;
 			}
 		}
 
-		g_chart1RMConfig.data.labels.unshift(date);
+		// Add 1RM data to the chart
+		g_chart1RMConfig.data.labels.push(date);
 		g_chart1RMConfig.data.datasets.forEach(function(dataset) {
-			dataset.data.unshift(Math.round(kgToPound(max_1rm), 1));
+			dataset.data.push(Math.round(kgToPound(workoutMax1RM), 1));
 		});
+
+		// Add record weight and rep to the chart (if new)
+		if (recordWeight < workoutMaxWeight) {
+			recordWeight = workoutMaxWeight;
+			g_chartRWConfig.data.labels.push(date);
+			g_chartRWConfig.data.datasets.forEach(function(dataset) {
+				dataset.data.push(Math.round(kgToPound(recordWeight), 1));
+			});
+		}
+		if (recordRepetition < workoutMaxRep) {
+			recordRepetition = workoutMaxRep;
+			g_chartRRConfig.data.labels.push(date);
+			g_chartRRConfig.data.datasets.forEach(function(dataset) {
+				dataset.data.push(recordRepetition);
+			});
+		}
 	}
 
-	$('#exercise-summary-data').html(innerHtml);
-
 	// Update chart
-	g_chart1RMChart.update();
+	updateCharts();
 }
 
 function setupCharts() {
@@ -297,7 +342,7 @@ function setupCharts() {
 		options: {
 			title: {
 				display: true,
-				text: '1RM'
+				text: '1RM (lb.)'
 			},
 			gridLines: {
 				display: true,
@@ -325,6 +370,167 @@ function setupCharts() {
 			},
 		}
 	};
-	
+	g_chartRWConfig = {
+		type: 'line',
+		label: 'Record Weight',
+		data: {
+			labels: [],
+			datasets: [{
+				label: 'Record Weight',
+				backgroundColor: '#4cb67d16',
+				borderColor: '#4cb67d',
+				data: [],
+				fill: true
+			}]
+		},
+		options: {
+			title: {
+				display: true,
+				text: 'Record Weight (lb.)'
+			},
+			gridLines: {
+				display: true,
+				drawBorder: true,
+				drawOnChartArea: false,
+			},
+			scales: {
+				x: {
+					display: true,
+					scaleLabel: {
+						display: true,
+						labelString: 'Date'
+					},
+				},
+				y: {
+					display: true,
+					scaleLabel: {
+						display: true,
+						labelString: 'Value'
+					},
+				}
+			},
+			legend: {
+				display: false
+			},
+		}
+	};
+	g_chartRRConfig = {
+		type: 'line',
+		label: 'Record Repetition',
+		data: {
+			labels: [],
+			datasets: [{
+				label: 'Record Repetition',
+				backgroundColor: '#4cb67d16',
+				borderColor: '#4cb67d',
+				data: [],
+				fill: true
+			}]
+		},
+		options: {
+			title: {
+				display: true,
+				text: 'Record Repetition'
+			},
+			gridLines: {
+				display: true,
+				drawBorder: true,
+				drawOnChartArea: false,
+			},
+			scales: {
+				x: {
+					display: true,
+					scaleLabel: {
+						display: true,
+						labelString: 'Date'
+					},
+				},
+				y: {
+					display: true,
+					scaleLabel: {
+						display: true,
+						labelString: 'Value'
+					},
+				}
+			},
+			legend: {
+				display: false
+			},
+		}
+	};
+	g_chartVConfig = {
+		type: 'line',
+		label: 'Volume',
+		data: {
+			labels: [],
+			datasets: [{
+				label: 'Volume',
+				backgroundColor: '#4cb67d16',
+				borderColor: '#4cb67d',
+				data: [],
+				fill: true
+			}]
+		},
+		options: {
+			title: {
+				display: true,
+				text: 'Volume (lb.)'
+			},
+			gridLines: {
+				display: true,
+				drawBorder: true,
+				drawOnChartArea: false,
+			},
+			scales: {
+				x: {
+					display: true,
+					scaleLabel: {
+						display: true,
+						labelString: 'Date'
+					},
+				},
+				y: {
+					display: true,
+					scaleLabel: {
+						display: true,
+						labelString: 'Value'
+					},
+				}
+			},
+			legend: {
+				display: false
+			},
+		}
+	};
+
 	g_chart1RMChart = new Chart(g_chart1RM, g_chart1RMConfig);
+	g_chartRWChart = new Chart(g_chartRW, g_chartRWConfig);
+	g_chartRRChart = new Chart(g_chartRR, g_chartRRConfig);
+	g_chartVChart = new Chart(g_chartV, g_chartVConfig);
+}
+
+function clearCharts() {
+	g_chart1RMConfig.data.labels = [];
+	g_chart1RMConfig.data.datasets.forEach(function(dataset) {
+		dataset.data = [];
+	});
+	g_chartRWConfig.data.labels = [];
+	g_chartRWConfig.data.datasets.forEach(function(dataset) {
+		dataset.data = [];
+	});
+	g_chartRRConfig.data.labels = [];
+	g_chartRRConfig.data.datasets.forEach(function(dataset) {
+		dataset.data = [];
+	});
+	g_chartVConfig.data.labels = [];
+	g_chartVConfig.data.datasets.forEach(function(dataset) {
+		dataset.data = [];
+	});
+}
+
+function updateCharts() {
+	g_chart1RMChart.update();
+	g_chartRWChart.update();
+	g_chartRRChart.update();
+	g_chartVChart.update();
 }
