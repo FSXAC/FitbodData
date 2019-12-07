@@ -77,3 +77,10 @@ p.htitle {
     margin: 0;
     line-height: 1.0;
 }
+
+.workout-sets {
+    margin-left: 1em;
+    margin-bottom: 1em;
+    border-left: 1px solid #ccc;
+    padding-left: .75em;
+}

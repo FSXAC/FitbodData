@@ -236,7 +236,7 @@ function populateExerciseSummary(exercise) {
 		innerHtml += date;
 		innerHtml += '</p>';
 
-		innerHtml += '<div class="pl-2 mb-3">';
+		innerHtml += '<div class="workout-sets">';
 
 		// Iterate through each set
 		for (let i = 0; i < exerciseData[key].length; i++) {
