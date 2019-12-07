@@ -262,7 +262,8 @@ function populateExerciseSummary(exercise) {
 	for (let keyIndex = 0; keyIndex < sorted_keys.length; keyIndex++) {
 
 		let key = sorted_keys[keyIndex];
-		let date = new Date(key.substring(0, 19)).toDateString();
+		let dateObj = new Date(key.substring(0, 19));
+		let date = dateObj.getFullYear() + '-' + (dateObj.getMonth() + 1) + '-' + (dateObj.getDate());
 
 		// Find the maximum 1rm of that session
 		let workoutMax1RM = 0;
@@ -290,33 +291,101 @@ function populateExerciseSummary(exercise) {
 			if (workoutMaxRep < set.reps) {
 				workoutMaxRep = set.reps;
 			}
+
+			// Accumulate volume
+			workoutVolume += set.weight * set.reps;
 		}
 
 		// Add 1RM data to the chart
-		g_chart1RMConfig.data.labels.push(date);
-		g_chart1RMConfig.data.datasets.forEach(function(dataset) {
-			dataset.data.push(Math.round(kgToPound(workoutMax1RM), 1));
-		});
+		if (workoutMax1RM > 0.1) {
+			g_chart1RMConfig.data.labels.push(date);
+			g_chart1RMConfig.data.datasets.forEach(function(dataset) {
+				dataset.data.push(Math.round(kgToPound(workoutMax1RM), 1));
+			});
+		}
+
+		// Add volume to chart
+		if (workoutVolume > 0.1) {
+			g_chartVConfig.data.labels.push(date);
+			g_chartVConfig.data.datasets.forEach(function(dataset) {
+				dataset.data.push(Math.round(kgToPound(workoutVolume), 1));
+			});
+		}
 
 		// Add record weight and rep to the chart (if new)
 		if (recordWeight < workoutMaxWeight) {
 			recordWeight = workoutMaxWeight;
-			g_chartRWConfig.data.labels.push(date);
-			g_chartRWConfig.data.datasets.forEach(function(dataset) {
-				dataset.data.push(Math.round(kgToPound(recordWeight), 1));
-			});
+			// g_chartRWConfig.data.labels.push(date);
+			// g_chartRWConfig.data.datasets.forEach(function(dataset) {
+			// 	dataset.data.push(Math.round(kgToPound(recordWeight), 1));
+			// });
 		}
+		g_chartRWConfig.data.labels.push(date);
+		g_chartRWConfig.data.datasets.forEach(function(dataset) {
+			dataset.data.push(Math.round(kgToPound(recordWeight), 1));
+		});
 		if (recordRepetition < workoutMaxRep) {
 			recordRepetition = workoutMaxRep;
-			g_chartRRConfig.data.labels.push(date);
-			g_chartRRConfig.data.datasets.forEach(function(dataset) {
-				dataset.data.push(recordRepetition);
-			});
+			// g_chartRRConfig.data.labels.push(date);
+			// g_chartRRConfig.data.datasets.forEach(function(dataset) {
+			// 	dataset.data.push(recordRepetition);
+			// });
 		}
+		g_chartRRConfig.data.labels.push(date);
+		g_chartRRConfig.data.datasets.forEach(function(dataset) {
+			dataset.data.push(recordRepetition);
+		});
 	}
 
 	// Update chart
 	updateCharts();
+}
+
+function generateChartConfig(label, titleText) {
+	return {
+		type: 'line',
+		label: label,
+		data: {
+			labels: [],
+			datasets: [{
+				label: label,
+				backgroundColor: '#4cb67d16',
+				borderColor: '#4cb67d',
+				data: [],
+				fill: true
+			}]
+		},
+		options: {
+			title: {
+				display: true,
+				text: titleText
+			},
+			gridLines: {
+				display: true,
+				drawBorder: true,
+				drawOnChartArea: false,
+			},
+			scales: {
+				x: {
+					display: true,
+					scaleLabel: {
+						display: true,
+						labelString: 'Date'
+					},
+				},
+				y: {
+					display: true,
+					scaleLabel: {
+						display: true,
+						labelString: 'Value'
+					},
+				}
+			},
+			legend: {
+				display: false
+			},
+		}
+	};
 }
 
 function setupCharts() {
@@ -326,187 +395,15 @@ function setupCharts() {
 	Chart.defaults.global.animation.duration = 300;
 	Chart.defaults.global.title.fontSize = 20;
 
-	g_chart1RMConfig = {
-		type: 'line',
-		label: '1-Rep-Max',
-		data: {
-			labels: [],
-			datasets: [{
-				label: '1RM',
-				backgroundColor: '#4cb67d16',
-				borderColor: '#4cb67d',
-				data: [],
-				fill: true
-			}]
-		},
-		options: {
-			title: {
-				display: true,
-				text: '1RM (lb.)'
-			},
-			gridLines: {
-				display: true,
-				drawBorder: true,
-				drawOnChartArea: false,
-			},
-			scales: {
-				x: {
-					display: true,
-					scaleLabel: {
-						display: true,
-						labelString: 'Date'
-					},
-				},
-				y: {
-					display: true,
-					scaleLabel: {
-						display: true,
-						labelString: 'Value'
-					},
-				}
-			},
-			legend: {
-				display: false
-			},
-		}
-	};
-	g_chartRWConfig = {
-		type: 'line',
-		label: 'Record Weight',
-		data: {
-			labels: [],
-			datasets: [{
-				label: 'Record Weight',
-				backgroundColor: '#4cb67d16',
-				borderColor: '#4cb67d',
-				data: [],
-				fill: true
-			}]
-		},
-		options: {
-			title: {
-				display: true,
-				text: 'Record Weight (lb.)'
-			},
-			gridLines: {
-				display: true,
-				drawBorder: true,
-				drawOnChartArea: false,
-			},
-			scales: {
-				x: {
-					display: true,
-					scaleLabel: {
-						display: true,
-						labelString: 'Date'
-					},
-				},
-				y: {
-					display: true,
-					scaleLabel: {
-						display: true,
-						labelString: 'Value'
-					},
-				}
-			},
-			legend: {
-				display: false
-			},
-		}
-	};
-	g_chartRRConfig = {
-		type: 'line',
-		label: 'Record Repetition',
-		data: {
-			labels: [],
-			datasets: [{
-				label: 'Record Repetition',
-				backgroundColor: '#4cb67d16',
-				borderColor: '#4cb67d',
-				data: [],
-				fill: true
-			}]
-		},
-		options: {
-			title: {
-				display: true,
-				text: 'Record Repetition'
-			},
-			gridLines: {
-				display: true,
-				drawBorder: true,
-				drawOnChartArea: false,
-			},
-			scales: {
-				x: {
-					display: true,
-					scaleLabel: {
-						display: true,
-						labelString: 'Date'
-					},
-				},
-				y: {
-					display: true,
-					scaleLabel: {
-						display: true,
-						labelString: 'Value'
-					},
-				}
-			},
-			legend: {
-				display: false
-			},
-		}
-	};
-	g_chartVConfig = {
-		type: 'line',
-		label: 'Volume',
-		data: {
-			labels: [],
-			datasets: [{
-				label: 'Volume',
-				backgroundColor: '#4cb67d16',
-				borderColor: '#4cb67d',
-				data: [],
-				fill: true
-			}]
-		},
-		options: {
-			title: {
-				display: true,
-				text: 'Volume (lb.)'
-			},
-			gridLines: {
-				display: true,
-				drawBorder: true,
-				drawOnChartArea: false,
-			},
-			scales: {
-				x: {
-					display: true,
-					scaleLabel: {
-						display: true,
-						labelString: 'Date'
-					},
-				},
-				y: {
-					display: true,
-					scaleLabel: {
-						display: true,
-						labelString: 'Value'
-					},
-				}
-			},
-			legend: {
-				display: false
-			},
-		}
-	};
+	g_chart1RMConfig = generateChartConfig('1RM', '1RM (lb.)');
+	g_chartVConfig = generateChartConfig('Volume', 'Volume (lb.)');
+	g_chartRWConfig = generateChartConfig('Record Weight', 'Record Weight (lb.)');
+	g_chartRRConfig = generateChartConfig('Record Repetition', 'Record Repetition');
 
 	g_chart1RMChart = new Chart(g_chart1RM, g_chart1RMConfig);
+	g_chartVChart = new Chart(g_chartV, g_chartVConfig);
 	g_chartRWChart = new Chart(g_chartRW, g_chartRWConfig);
 	g_chartRRChart = new Chart(g_chartRR, g_chartRRConfig);
-	g_chartVChart = new Chart(g_chartV, g_chartVConfig);
 }
 
 function clearCharts() {
