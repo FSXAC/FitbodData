@@ -187,31 +187,7 @@ function populateExerciseView() {
 }
 
 function populateExerciseSummary(exercise) {
-	// let entries = [];
-
-	// for (let i = 0; i < g_FitDataLines.length; i++) {
-	// 	const dataEntry = g_FitDataLines[i];
-	// 	if (dataEntry['exercise'] === exercise) {
-	// 		entries.push(dataEntry)
-	// 	}
-	// }
-
-	// if (entries.length < 1) {
-	// 	return;
-	// }
-
 	$('#exercise-summary-heading').html(exercise)
-	// $('#exercise-summary-data').html('');
-
-	
-	// for (let i = 0; i < entries.length; i++) {
-	// 	entry = entries[i]
-	// 	if (entry['isWarmUp']) {
-	// 		$('#exercise-summary-data').append(`<p class="text-light">${entry['date']} reps: ${entry['reps']} weight: ${(entry['weightKg'] * 2.204).toFixed(1)}lb</p>`);
-	// 	} else {
-	// 		$('#exercise-summary-data').append(`<p>${entry['date']} reps: ${entry['reps']} weight: ${(entry['weightKg'] * 2.204).toFixed(1)}lb</p>`);
-	// 	}
-	// }
 	const exerciseData = g_FitExercises.data[exercise];
 
 	const sorted_keys = Object.keys(exerciseData).sort();
