@@ -32,5 +32,5 @@ function startLoadingUI() {
 }
 
 function stopLoadingUI() {
-    $('.loading').hide();
+    $('.loading').fadeOut();
 }

@@ -18,6 +18,9 @@ $(document).ready(function() {
 	// Setup event handling for the top navigation buttons (ui.js)
 	setupNavEventHandling();
 
+	startLoadingUI();
+	setTimeout(stopLoadingUI, 1000);
+
 	// setup handler for the file submission form (papaparse.js)
 	$("input[type=file]").parse({
 		config: {
@@ -166,8 +169,8 @@ function populateFitHistoryView() {
 		}
 	}
 
-	// setTimeout(stopLoadingUI, 3000);
-	stopLoadingUI();
+	// setTimeout(stopLoadingUI, 500);
+	// stopLoadingUI();
 }
 
 function populateExerciseView() {

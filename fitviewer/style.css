@@ -8,6 +8,7 @@ body {
 hr { border-top: 1px solid rgba(100,100,100,.5) }
 .navbar.navbar-dark { background-color: #3b3b39; }
 .navbar-dark .navbar-nav .active > .nav-link, .navbar-dark .navbar-nav .nav-link.active, .navbar-dark .navbar-nav .nav-link.show, .navbar-dark .navbar-nav .show > .nav-link { color: #ff6e60; }
+.text-gray { color: #ccc; }
 .exercise-side-bar { border: 1px solid navy; }
 .loading {
     width: 100%;
@@ -42,3 +43,27 @@ hr { border-top: 1px solid rgba(100,100,100,.5) }
 }
 
 #history-list { padding: 0 2rem; }
+.history-item {
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 1em;
+    border-radius: 5px;
+    margin-bottom: 1em;
+}
+.history-item p { 
+    margin-bottom: 0;
+    line-height: 1.0;
+}
+.history-item .stat {
+    display: inline-block;
+    min-width: 100px;
+}
+.history-item p {
+    color: #ccc;
+}
+.history-item p.lead, .history-item p.htitle {
+    color: #fff;
+}
+p.htitle {
+    font-size: 1.5em;
+    margin: .5em 0;
+}
