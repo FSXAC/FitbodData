@@ -18,9 +18,6 @@ $(document).ready(function() {
 	// Setup event handling for the top navigation buttons (ui.js)
 	setupNavEventHandling();
 
-	startLoadingUI();
-	setTimeout(stopLoadingUI, 1000);
-
 	// setup handler for the file submission form (papaparse.js)
 	$("input[type=file]").parse({
 		config: {
@@ -34,6 +31,7 @@ $(document).ready(function() {
 		},
 		complete: function(results) {
 			console.log('File processing complete.');
+			handleNavOverview();
 			populateView();
 		}
 	});
@@ -132,6 +130,8 @@ function processFitData(data) {
 function populateView() {
 	populateFitHistoryView();
 	populateExerciseView();
+
+	setTimeout(stopLoadingUI, 500);
 }
 
 function populateFitHistoryView() {
@@ -141,36 +141,31 @@ function populateFitHistoryView() {
 	for (let keyIndex = sorted_keys.length - 1; keyIndex >= 0; keyIndex--)
 	{
 		let key = sorted_keys[keyIndex];
+		let date = new Date(key.substring(0, 19)).toDateString();
 		let workout = g_FitHistory.data[key];
 
 		if (workout.exercises !== undefined) {
-				let itemHtml = '<p class="lead">{date}</p><p>{n} exercises: {exs}</p><p>Volume: {v} lb</p>'
+				let itemHtml = '<div class="history-item"><p>{date}</p><p class="htitle">{exs}</p><div class="stat"><p>Exercises</p><p class="lead">{n}</p></div><div class="stat"><p>Volume</p><p class="lead">{v}</p></div></div>'
 			$('#history-list').append(
 				itemHtml
-				.replace('{date}', key)
+				.replace('{date}', date)
 				.replace('{n}', workout.exercises.length)
 				.replace('{exs}', workout.exercises.join(', '))
 				.replace('{v}', Math.round(kgToPound(workout.volume)))
 			);
-			$('#history-list').append('<hr/>')
 		} else {
-			// Cardio workout (hack)
-			let itemHtml = '<p class="lead">{date}</p><p>Exercise: {ex}</p><p>Distance: {d} m, duration: {dur} s, incline: {i}, resistance: {r}</p>'
+			let itemHtml = '<div class="history-item"><p>{date}</p><p class="htitle">{ex}</p><div class="stat"><p>Distance</p><p class="lead">{d}</p></div><div class="stat"><p>Duration</p><p class="lead">{dur}</p></div><div class="stat"><p>Inclination</p><p class="lead">{i}&deg;</p></div><div class="stat"><p>Resistance</p><p class="lead">{r}</p></div></div>';
 			$('#history-list').append(
 				itemHtml
-				.replace('{date}', key)
+				.replace('{date}', date)
 				.replace('{ex}', workout.exercise)
 				.replace('{d}', Math.round(workout.distance))
 				.replace('{dur}', Math.round(workout.duration))
 				.replace('{i}', Math.round(workout.incline))
-				.replace('{r}', Math.round(workout.resistance))
+				.replace('{r}', Math.round(workout.resistance, 1))
 			);
-			$('#history-list').append('<hr/>')
 		}
 	}
-
-	// setTimeout(stopLoadingUI, 500);
-	// stopLoadingUI();
 }
 
 function populateExerciseView() {
@@ -201,24 +196,27 @@ function populateExerciseSummary(exercise) {
 	for (let keyIndex = sorted_keys.length - 1; keyIndex >= 0; keyIndex--) {
 		let key = sorted_keys[keyIndex];
 
-		innerHtml += '<p>';
-		innerHtml += key;
+		innerHtml += '<p class="mb-1">';
+		innerHtml += new Date(key.substring(0, 19)).toDateString();
 		innerHtml += '</p>';
 
-		innerHtml += '<div class="pl-2">';
+		innerHtml += '<div class="pl-2 mb-3">';
 		for (let i = 0; i < exerciseData[key].length; i++) {
 
 			let reps = exerciseData[key][i].reps;
 			let weightLb = Math.round(kgToPound(exerciseData[key][i].weight));
-
-			innerHtml += '<p>';
-			innerHtml += 'Set ' + (i + 1) + ': ';
+			
+			if (exerciseData[key][i].isWarmup) {
+				innerHtml += '<p class="text-gray">';
+			} else {
+				innerHtml += '<p>';
+			}
 			innerHtml += reps;
 			
 			if (weightLb >= 1) {
-				innerHtml += '&times;';
+				innerHtml += '&nbsp;&times;&nbsp;';
 				innerHtml += weightLb;
-				innerHtml += ' lb';
+				innerHtml += ' lb.';
 			}
 
 			if (exerciseData[key][i].isWarmup) {

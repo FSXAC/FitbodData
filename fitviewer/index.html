@@ -41,64 +41,34 @@
 </nav>
 
 <div class="container-fluid">
-	<div class="content-page overview-content row" style="display: none">
-		<div class="col-12">
-			<h1>Overview</h1>
+	<div class="content-page overview-content" style="display: none">
+		<header>
+			<h1 class="display-4">Overview</h1>
+			<p class="lead">Title text here.</p>
+		</header>
+	</div>
+	<div class="content-page history-content" style="display: none">
+		<header>
+			<h1 class="display-4">History</h1>
+			<p class="lead">This is a list of workout history, sorted in reverse-chronological order.</p>
+		</header>
+		<div id="history-list">
 		</div>
 	</div>
-	<div class="content-page history-content row">
-	<!-- <div class="content-page history-content row" style="display: none"> -->
-		<div class="col-12">
-			<header class="jumbotron" style="background-color: transparent;">
-				<h1 class="display-4">History</h1>
-				<p class="lead">This is a list of workout history, sorted in reverse-chronological order.</p>
-			</header>
-			<div id="history-list">
-				<div class="history-item">
-					<p>THU, 2019-12-01</p>
-					<p class="htitle">Hiking</p>
-					<div class="stat">
-						<p>Distance</p>
-						<p class="lead">1151 m</p>
-					</div>
-					<div class="stat">
-						<p>Duration</p>
-						<p class="lead">773 s</p>
-					</div>
-					<div class="stat">
-						<p>Inclination</p>
-						<p class="lead">0&deg;</p>
-					</div>
-					<div class="stat">
-						<p>Resistance</p>
-						<p class="lead">0.0</p>
-					</div>
-				</div>
-				<div class="history-item">
-					<p>MON, 2019-11-28</p>
-					<p class="htitle">Barbell Bench Press, Seated Tricep Press, Dumbbell Incline Fly, Barbell Shoulder Press, Dumbbell Skullcrusher, Dumbbell Rear Delt Raise</p>
-					<div class="stat">
-						<p>Exercises</p>
-						<p class="lead">6</p>
-					</div>
-					<div class="stat">
-						<p>Volume</p>
-						<p class="lead">9,482 lb.</p>
-					</div>
-				</div>
+	<div class="content-page exercises-content" style="display: none">
+		<header>
+			<h1 class="display-4">Exercises</h1>
+			<p class="lead">Title text here.</p>
+		</header>
+		<div class="row">
+			<div class="exercise-side-bar col-3 py-2">
+				<ul id="exercise-list" class="nav flex-column"></ul>
 			</div>
-		</div>
-	</div>
-	<div class="content-page exercises-content row" style="display: none">
-		<div class="col-12">
-			<h1>Exercises</h1>
-		</div>
-		<div class="exercise-side-bar col-3 py-2">
-			<ul id="exercise-list" class="nav flex-column"></ul>
-		</div>
-		<div class="col-9 py-2">
-			<h3 id='exercise-summary-heading'>Click on an exercise</h3>
-			<div id='exercise-summary-data'></div>
+			<div class="col-9 py-2">
+				<h2 id='exercise-summary-heading'>Click on an exercise</h2>
+				<h3>Exercise History</h3>
+				<div id='exercise-summary-data'></div>
+			</div>
 		</div>
 	</div>
 </div>
