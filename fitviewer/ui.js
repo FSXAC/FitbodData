@@ -26,3 +26,11 @@ function handleNavExercises() {
 	$('#nav-exercises-button').parent().addClass('active');
 	$('.exercises-content').show();
 }
+
+function startLoadingUI() {
+    $('.loading').show();
+}
+
+function stopLoadingUI() {
+    $('.loading').hide();
+}

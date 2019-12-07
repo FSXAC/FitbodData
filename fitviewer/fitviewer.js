@@ -30,13 +30,15 @@ $(document).ready(function() {
 			}
 		},
 		complete: function(results) {
-			console.log('File loading complete.');
+			console.log('File processing complete.');
+			populateView();
 		}
 	});
 });
 
 // Use the parsed results to populate g_FitHistory
 function processFitData(data) {
+	startLoadingUI();
 	// 'data' parameter is a list of objects
 	for (let entryIndex = 0; entryIndex < data.length; entryIndex++) {
 		let entry = data[entryIndex];
@@ -68,10 +70,10 @@ function processFitData(data) {
 			// Add to fit history
 			g_FitHistory.data[date + '(C)'] = {
 				exercise: exercise,
-				distance: (incline !== null) ? incline : -1,
-				duration: (resistance !== null) ? resistance : -1,
-				incline: (distance !== null) ? distance : -1,
-				resistance: (duration !== null) ? duration : -1,
+				incline: (incline !== null) ? incline : -1,
+				resistance: (resistance !== null) ? resistance : -1,
+				distance: (distance !== null) ? distance : -1,
+				duration: (duration !== null) ? duration : -1,
 			};
 		}
 
@@ -84,12 +86,19 @@ function processFitData(data) {
 			let weight = entry['Weight(kg)'];
 			
 			// Add data to exercise history
+
+			// If exercise doesn't exist
 			if (!(exercise in g_FitExercises.data)) {
-				g_FitExercises.data[exercise] = [];
+
+				// We use a object here because we want to group it by sets
+				g_FitExercises.data[exercise] = {};
 			}
 
-			g_FitExercises.data[exercise].push({
-				date: date,
+			if (!(date in g_FitExercises.data[exercise])) {
+				g_FitExercises.data[exercise][date] = [];
+			}
+
+			g_FitExercises.data[exercise][date].push({
 				reps: reps,
 				weight: weight,
 				isWarmup: warmup,
@@ -114,8 +123,48 @@ function processFitData(data) {
 			}
 		}
 	}
+}
 
-	console.log(g_FitHistory);
-	console.log(g_FitCardio);
-	console.log(g_FitExercises);
+// Populate webpage with data
+function populateView() {
+	populateFitHistory();
+}
+
+function populateFitHistory() {
+	const sorted_keys = Object.keys(g_FitHistory.data).sort()
+
+	// Going in reverse order (since we want most recent on top)
+	for (let keyIndex = sorted_keys.length - 1; keyIndex >= 0; keyIndex--)
+	{
+		let key = sorted_keys[keyIndex];
+		let workout = g_FitHistory.data[key];
+
+		if (workout.exercises !== undefined) {
+				let itemHtml = '<p class="lead">{date}</p><p>{n} exercises: {exs}</p><p>Volume: {v} lb</p>'
+			$('#history-list').append(
+				itemHtml
+				.replace('{date}', key)
+				.replace('{n}', workout.exercises.length)
+				.replace('{exs}', workout.exercises.join(', '))
+				.replace('{v}', Math.round(kgToPound(workout.volume)))
+			);
+			$('#history-list').append('<hr/>')
+		} else {
+			// Cardio workout (hack)
+			let itemHtml = '<p class="lead">{date}</p><p>Exercise: {ex}</p><p>Distance: {d} m, duration: {dur} s, incline: {i}, resistance: {r}</p>'
+			$('#history-list').append(
+				itemHtml
+				.replace('{date}', key)
+				.replace('{ex}', workout.exercise)
+				.replace('{d}', Math.round(workout.distance))
+				.replace('{dur}', Math.round(workout.duration))
+				.replace('{i}', Math.round(workout.incline))
+				.replace('{r}', Math.round(workout.resistance))
+			);
+			$('#history-list').append('<hr/>')
+		}
+	}
+
+	// setTimeout(stopLoadingUI, 3000);
+	stopLoadingUI();
 }
