@@ -34,3 +34,23 @@ function startLoadingUI() {
 function stopLoadingUI() {
     $('.loading').fadeOut();
 }
+
+/* https://www.w3schools.com/howto/howto_js_filter_lists.asp */
+function exerciseListSearch() {
+	let input = document.getElementById("exercise-list-search");
+	let filter = input.value.toUpperCase();
+
+    let exerciseList = document.getElementById("exercise-list");
+	let exerciseItems = exerciseList.getElementsByTagName("li");
+	
+    for (i = 0; i < exerciseItems.length; i++) {
+		let innerA = exerciseItems[i].getElementsByTagName("a")[0];
+		let text = innerA.textContent || innerA.innerText;
+		
+        if (text.toUpperCase().indexOf(filter) > -1) {
+            exerciseItems[i].style.display = "";
+        } else {
+            exerciseItems[i].style.display = "none";
+        }
+    }
+}
