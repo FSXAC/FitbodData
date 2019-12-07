@@ -127,10 +127,11 @@ function processFitData(data) {
 
 // Populate webpage with data
 function populateView() {
-	populateFitHistory();
+	populateFitHistoryView();
+	populateExerciseView();
 }
 
-function populateFitHistory() {
+function populateFitHistoryView() {
 	const sorted_keys = Object.keys(g_FitHistory.data).sort()
 
 	// Going in reverse order (since we want most recent on top)
@@ -167,4 +168,90 @@ function populateFitHistory() {
 
 	// setTimeout(stopLoadingUI, 3000);
 	stopLoadingUI();
+}
+
+function populateExerciseView() {
+	const sorted_keys = Object.keys(g_FitExercises.data).sort()
+	for (let keyIndex = 0; keyIndex < sorted_keys.length; keyIndex++)
+	{
+		let key = sorted_keys[keyIndex];
+		let exercise = g_FitExercises.data[key];
+
+		$('#exercise-list').append('<li class="nav-item"><a class="exercise-item" href="#" style="float:left">' + key + '</a><span style="float: right">' + Object.keys(exercise).length + '</span></li>')
+	}
+
+	// Assign event listeners
+	$('.nav-item a.exercise-item').on('click', function () {
+		populateExerciseSummary($(this).text());
+	});
+}
+
+function populateExerciseSummary(exercise) {
+	// let entries = [];
+
+	// for (let i = 0; i < g_FitDataLines.length; i++) {
+	// 	const dataEntry = g_FitDataLines[i];
+	// 	if (dataEntry['exercise'] === exercise) {
+	// 		entries.push(dataEntry)
+	// 	}
+	// }
+
+	// if (entries.length < 1) {
+	// 	return;
+	// }
+
+	$('#exercise-summary-heading').html(exercise)
+	// $('#exercise-summary-data').html('');
+
+	
+	// for (let i = 0; i < entries.length; i++) {
+	// 	entry = entries[i]
+	// 	if (entry['isWarmUp']) {
+	// 		$('#exercise-summary-data').append(`<p class="text-light">${entry['date']} reps: ${entry['reps']} weight: ${(entry['weightKg'] * 2.204).toFixed(1)}lb</p>`);
+	// 	} else {
+	// 		$('#exercise-summary-data').append(`<p>${entry['date']} reps: ${entry['reps']} weight: ${(entry['weightKg'] * 2.204).toFixed(1)}lb</p>`);
+	// 	}
+	// }
+	const exerciseData = g_FitExercises.data[exercise];
+
+	const sorted_keys = Object.keys(exerciseData).sort();
+
+
+	let innerHtml = ''
+
+	for (let keyIndex = sorted_keys.length - 1; keyIndex >= 0; keyIndex--) {
+		let key = sorted_keys[keyIndex];
+
+		innerHtml += '<p>';
+		innerHtml += key;
+		innerHtml += '</p>';
+
+		innerHtml += '<div class="pl-2">';
+		for (let i = 0; i < exerciseData[key].length; i++) {
+
+			let reps = exerciseData[key][i].reps;
+			let weightLb = Math.round(kgToPound(exerciseData[key][i].weight));
+
+			innerHtml += '<p>';
+			innerHtml += 'Set ' + (i + 1) + ': ';
+			innerHtml += reps;
+			
+			if (weightLb >= 1) {
+				innerHtml += '&times;';
+				innerHtml += weightLb;
+				innerHtml += ' lb';
+			}
+
+			if (exerciseData[key][i].isWarmup) {
+				innerHtml += ' (warm-up)';
+			}
+
+			innerHtml += '</p>';
+		}
+		innerHtml += '</div>';
+	}
+
+	$('#exercise-summary-data').html(innerHtml);
+
+	console.log(exerciseData);
 }
