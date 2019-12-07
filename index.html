@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>FitBod Data Export Viewer</title>
+	<meta name="description" content="View and visualize FitBod data export in the web browser" />
+	<meta name="author" content="Muchen He" />
+	<link rel="stylesheet" href="https://use.typekit.net/ycn5zqo.css">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="style.css">
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js" integrity="sha256-R4pqcOYV8lt7snxMQO/HSbVCFRPMdrhAFMH+vr9giYI=" crossorigin="anonymous"></script>
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-dark">
+	<div class="container-fluid">
+		<a href="/" class="navbar-brand"><strong>FitViewer</strong></a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+			aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item active">
+			  <a class="nav-link" href="#" id="nav-overview-button">Overview</a>
+			</li>
+			<li class="nav-item">
+			  <a class="nav-link" href="#" id="nav-history-button">History</a>
+			</li>
+			<li class="nav-item">
+			  <a class="nav-link" href="#" id="nav-exercises-button">Exercises</a>
+			</li>
+		  </ul>
+		<form class="form-inline" action="?" method="post">
+			<input class="form-control mr-2" type="file" id="fileInput" value="Import" />
+			<a class="btn btn-outline-primary" id="loadButton" href="#" disabled>Load</a>
+		</form>
+	</div>
+</nav>
+
+<div class="container-fluid">
+	<div class="content-page overview-content" style="display: none">
+		<header>
+			<h1 class="display-4">Overview</h1>
+			<p class="lead">Title text here.</p>
+		</header>
+	</div>
+	<div class="content-page history-content" style="display: none">
+		<header>
+			<h1 class="display-4">History</h1>
+			<p class="lead">This is a list of workout history, sorted in reverse-chronological order.</p>
+		</header>
+		<div id="history-list">
+		</div>
+	</div>
+	<div class="content-page exercises-content" style="display: none">
+		<header>
+			<h1 class="display-4">Exercises</h1>
+			<p class="lead">Title text here.</p>
+		</header>
+		<div class="row">
+			<div class="exercise-side-bar col-3 py-2">
+				<ul id="exercise-list" class="nav flex-column"></ul>
+			</div>
+			<div class="col-9 py-2">
+				<h2 id='exercise-summary-heading'>Click on an exercise</h2>
+
+				<canvas id="chart-1rm" width="400" height="120"></canvas>
+
+				<h3>Exercise History</h3>
+				<div id='exercise-summary-data'></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="loading" style="display: none;"><div class="loading-wheel"></div></div>
+
+<script src="papaparse.min.js"></script>
+<script src="ui.js"></script>
+<script src="util.js"></script>
+<script src="exercises.js"></script>
+<script src="fitviewer.js"></script>
+<script>
+</script>
+</body>
+</html>
