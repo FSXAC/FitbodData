@@ -11,8 +11,6 @@
 	<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js" integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
-	<script src="fitviewer.js"></script>
-
 	<style>
 		.navbar { border: 1px solid black; }
 		.exercise-side-bar { border: 1px solid navy; }
@@ -38,7 +36,7 @@
 			</li>
 		  </ul>
 		<form class="form-inline">
-			<input class="form-control mr-2" type="file" id="fileInput" value="Import" disabled />
+			<input class="form-control mr-2" type="file" id="fileInput" value="Import" />
 			<a class="btn btn-outline-primary" id="loadButton" href="#" disabled>Load</a>
 		</form>
 	</div>
@@ -71,6 +69,8 @@
 		</div>
 	</div>
 </div>
-
+<script src="papaparse.min.js"></script>
+<script src="dataparser.js"></script>
+<script src="fitviewer.js"></script>
 </body>
 </html>

@@ -7,12 +7,12 @@ let g_FitHistoryData = undefined;	// Data sorted as list of days of objects
 // FIXME: HACK: currently hardcoded path
 // At the start, load the csv file
 $(document).ready(function() {
-	$.ajax({
-		type: 'GET',
-		url: 'data/fitbod_workout.csv',
-		dataType: 'text',
-		success: main
-	});
+// 	$.ajax({
+// 		type: 'GET',
+// 		url: 'data/fitbod_workout.csv',
+// 		dataType: 'text',
+// 		success: main
+// 	});
 
 	// Setup event handling for the top navigation buttons
 	setupNavEventHandling();
