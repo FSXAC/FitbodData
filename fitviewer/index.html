@@ -12,7 +12,7 @@
 	<link rel="stylesheet" href="style.css">
 	<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js" integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js" integrity="sha256-R4pqcOYV8lt7snxMQO/HSbVCFRPMdrhAFMH+vr9giYI=" crossorigin="anonymous"></script>
 </head>
 <body>
 <nav class="navbar navbar-expand-md navbar-dark">
@@ -66,6 +66,9 @@
 			</div>
 			<div class="col-9 py-2">
 				<h2 id='exercise-summary-heading'>Click on an exercise</h2>
+
+				<canvas id="chart-1rm" width="400" height="120"></canvas>
+
 				<h3>Exercise History</h3>
 				<div id='exercise-summary-data'></div>
 			</div>
@@ -80,5 +83,7 @@
 <script src="util.js"></script>
 <script src="exercises.js"></script>
 <script src="fitviewer.js"></script>
+<script>
+</script>
 </body>
 </html>

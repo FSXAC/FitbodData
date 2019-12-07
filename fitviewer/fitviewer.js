@@ -31,10 +31,13 @@ $(document).ready(function() {
 		},
 		complete: function(results) {
 			console.log('File processing complete.');
-			handleNavOverview();
+			// handleNavOverview();
+			handleNavExercises();
 			populateView();
 		}
 	});
+
+	setupCharts();
 });
 
 // Use the parsed results to populate g_FitHistory
@@ -231,4 +234,58 @@ function populateExerciseSummary(exercise) {
 	$('#exercise-summary-data').html(innerHtml);
 
 	console.log(exerciseData);
+}
+
+let g_chart1RM = document.getElementById('chart-1rm').getContext('2d');
+let g_chart1RMConfig;
+let g_chart1RMChart;
+
+function setupCharts() {
+	Chart.defaults.global.defaultFontColor = 'white';
+	Chart.defaults.global.defaultFontFamily = "'futura-pt', sans-serif";
+	Chart.defaults.global.defaultFontSize = 16;
+	Chart.defaults.global.animation.duration = 300;
+	Chart.defaults.global.title.fontSize = 20;
+
+	g_chart1RMConfig = {
+		type: 'line',
+		label: '1-Rep-Max',
+		data: {
+			labels: [],
+			datasets: [{
+				label: '1RM',
+				backgroundColor: '#4cb67d16',
+				borderColor: '#4cb67d',
+				data: [],
+				fill: true
+			}]
+		},
+		options: {
+			title: {
+				display: true,
+				text: '1RM'
+			},
+			scales: {
+				x: {
+					display: true,
+					scaleLabel: {
+						display: true,
+						labelString: 'Date'
+					}
+				},
+				y: {
+					display: true,
+					scaleLabel: {
+						display: true,
+						labelString: 'Value'
+					}
+				}
+			},
+			legend: {
+				display: false
+			}
+		}
+	};
+	
+	g_chart1RMChart = new Chart(g_chart1RM, g_chart1RMConfig);
 }
