@@ -5,8 +5,9 @@ body {
     font-family: futura-pt, sans-serif;
 }
 
-
-.navbar { border: 1px solid black; }
+hr { border-top: 1px solid rgba(100,100,100,.5) }
+.navbar.navbar-dark { background-color: #3b3b39; }
+.navbar-dark .navbar-nav .active > .nav-link, .navbar-dark .navbar-nav .nav-link.active, .navbar-dark .navbar-nav .nav-link.show, .navbar-dark .navbar-nav .show > .nav-link { color: #ff6e60; }
 .exercise-side-bar { border: 1px solid navy; }
 .loading {
     width: 100%;
@@ -39,3 +40,5 @@ body {
     0% { -webkit-transform: rotate(0); }
     100% { -webkit-transform: rotate(-360deg); }
 }
+
+#history-list { padding: 0 2rem; }
