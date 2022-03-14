@@ -27,28 +27,54 @@ let g_chartV = document.getElementById('chart-v').getContext('2d');
 let g_chartVConfig;
 let g_chartVChart;
 
+function handleInputDataFile() {
+	var file = new FileReader();
+	file.onload = () => {
+		// console.log(file.result);
+		let parse_config = {
+			header: true,
+			dynamicTyping: true,
+			skipEmptyLines: true,
+			complete: (results, file)=>{
+				processFitData(results.data);
+				handleNavOverview();
+				populateView();
+			}
+		}
+		let data = Papa.parse(
+			file.result,
+			parse_config
+		);
+		// processFitData(data.data);
+		// handleNavOverview();
+		// populateView();
+	}
+	file.readAsText(this.files[0]);
+}
+
 $(document).ready(function() {
 	// Setup event handling for the top navigation buttons (ui.js)
 	setupNavEventHandling();
 
 	// setup handler for the file submission form (papaparse.js)
-	$("input[type=file]").parse({
-		config: {
-			header: true,
-			dynamicTyping: true,
-			skipEmptyLines: true,
-			complete: function(results, file) {
-				// console.log("CSV processing done:", results);
-				processFitData(results.data)
-			}
-		},
-		complete: function() {
-			console.log('File processing complete.');
-			handleNavOverview();
-			populateView();
-		}
-	});
+	// $("input[type=file]").parse({
+	// 	config: {
+	// 		header: true,
+	// 		dynamicTyping: true,
+	// 		skipEmptyLines: true,
+	// 		complete: function(results, file) {
+	// 			// console.log("CSV processing done:", results);
+	// 			processFitData(results.data)
+	// 		}
+	// 	},
+	// 	complete: function() {
+	// 		console.log('File processing complete.');
+	// 		handleNavOverview();
+	// 		populateView();
+	// 	}
+	// });
 
+	document.getElementById('data-input').addEventListener('change', handleInputDataFile);
 	setupCharts();
 });
 
